@@ -15,41 +15,60 @@ const StoryPage = () => {
     const [error, setError] = useState('');
 
     useEffect(() => {
+        const loadImages = async () => {
+            setLoading(true);
+            try {
+                const cachedImages = await storageService.getData(STORAGE_KEY);
+                if (cachedImages) {
+                    setImages(cachedImages);
+                } else {
+                    setImages([]);
+                    await fetchAndCacheImages();
+                }
+            } catch (err) {
+                setError('Error loading images');
+                console.error('Error loading images:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
         loadImages();
     }, []);
-
-    const loadImages = async () => {
-        setLoading(true);
-        try {
-            const cachedImages = await storageService.getData(STORAGE_KEY);
-            if (cachedImages) {
-                setImages(cachedImages);
-            } else {
-                await fetchAndCacheImages();
-            }
-        } catch (err) {
-            setError('Error loading images');
-            console.error('Error loading images:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const fetchAndCacheImages = async () => {
         try {
             const response = await imageService.fetchBanners();
-            const newImages = await Promise.all(response.data.map(async (img) => {
-                const fileUri = `${FileSystem.cacheDirectory}${img.title}.jpg`;
-                await FileSystem.downloadAsync(img.url, fileUri);
-                return { uri: fileUri, title: img.title };
-            }));
-            setImages(newImages);
-            await storageService.storeData(STORAGE_KEY, newImages);
+            console.log('Fetched banners response:', response);
+            if (Array.isArray(response)) {
+                const newImages = await Promise.all(
+                    response.map(async (img) => {
+                        try {
+                            const fileUri = `${FileSystem.cacheDirectory}${img.title}.jpg`;
+                            const downloadResult = await FileSystem.downloadAsync(img.url, fileUri);
+                            console.log(`Download succeeded for ${img.title}:`, downloadResult.uri);
+                            return { imageURL: downloadResult.uri, title: img.title };
+                        } catch (downloadErr) {
+                            console.error(`Failed to download ${img.title}:`, downloadErr);
+                            return null;
+                        }
+                    })
+                );
+                const filteredImages = newImages.filter(img => img !== null);
+                setImages(filteredImages);
+                console.log('Set images state with:', filteredImages);
+                await storageService.storeData(STORAGE_KEY, filteredImages);
+            } else {
+                setError('Error: Invalid response structure');
+            }
         } catch (err) {
             setError('Error fetching images');
-            console.error('Error fetching images:', err);
+            console.error('Error fetching images:', err.message);
+        } finally {
+            setLoading(false);
+            console.log('Loading set to false');
         }
     };
+    
 
     const { width } = Dimensions.get('window');
 
@@ -65,7 +84,7 @@ const StoryPage = () => {
         return (
             <View style={[styles.container, { backgroundColor: theme.backgroundColor }]}>
                 <Text style={{ color: theme.textColor }}>{error}</Text>
-                <Button title="Retry" onPress={loadImages} color={theme.buttonColor} />
+                <Button title="Retry" onPress={fetchAndCacheImages} color={theme.buttonColor} />
             </View>
         );
     }
@@ -75,7 +94,7 @@ const StoryPage = () => {
             <ScrollView horizontal pagingEnabled>
                 {images.map((item, index) => (
                     <View key={index} style={styles.carouselItem}>
-                        <Image source={{ uri: item.uri }} style={styles.image} />
+                        <Image source={{ uri: item.imageURL }} style={styles.image} />
                         <Text style={[styles.title, { color: theme.textColor }]}>{item.title}</Text>
                     </View>
                 ))}

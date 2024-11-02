@@ -10,18 +10,18 @@ const ENDPOINTS = {
 // create Axios instance
 const api = axios.create({
     baseURL: BASE_URL,
-    timeout: 10000,
+    timeout: 100000,
 });
 
 // keyof typeof x serves as a type guard only allowing valid fields
 export const fetchData = async (endpointKey: keyof typeof ENDPOINTS) => {
    try {
-      const response = await api.get(String(ENDPOINTS[endpointKey]));
+      const response = await api.get(ENDPOINTS[endpointKey]);
       return response.data; 
-   } catch(error) {
-      console.error('Error fetching data: ', error);
+   } catch (error) {
+      console.error('Error in fetchData:', error);
       throw error;
    }
 };
- 
+
 export default api;
