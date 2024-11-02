@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "state-managed",
+    "slug": "state-managed",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/dd_logo_mobile.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/dd_logo_mobile.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/dd_logo_mobile.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/dd_logo_mobile.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a205464e-34a0-468c-a1b8-e39d22b339e4"
+      }
+    }
+  }
+}
