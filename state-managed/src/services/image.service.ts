@@ -1,11 +1,19 @@
+import { ImageItem } from '../models/model';
 import { fetchData } from './axios-api.service';
 
-/* imageService
-   - acts as a wrapper class for axios-api service
-   - filters/restricts fetchData requests to images */
+const STORAGE_KEY: string = '@my_app_banners';
+
 const imageService = {
    fetchBanners: async () => {
-      return await fetchData('banners');
+       return await fetchData('banners');
+   },
+   fetchAndCacheImages: async (): Promise<ImageItem[]> => {
+       // Fetch and process your images, ensuring they match the ImageItem structure
+       const response = await fetchData('banners');
+       return response.map((img: any) => ({
+           imageURL: img.url, 
+           title: img.title,  
+       }));
    },
 };
 

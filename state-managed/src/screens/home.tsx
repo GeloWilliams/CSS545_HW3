@@ -1,8 +1,13 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
+import { StackNavigationProp } from '@react-navigation/stack';
 
-const Home = ({ navigation }) => {
+type HomeProps = {
+    navigation: StackNavigationProp<any, any>;
+};
+
+const Home: React.FC<HomeProps> = ({ navigation }) => {
     const { theme, toggleTheme, isDarkTheme } = useTheme();
 
     return (
