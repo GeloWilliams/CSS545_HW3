@@ -15,4 +15,4 @@ theme the user was last on
 - Destroyed: when the app is fully closed or terminated, the saved data from AsyncStorage ensures
 that the user can resume from the same page upon reopening the app.
 
-**State Manager:** [AppStateManager.tsx](./src/components/AppStateManager.tsx)
+**State Manager:** [AppStateManager.tsx](./state-managed/src/components/AppStateManager.tsx)
